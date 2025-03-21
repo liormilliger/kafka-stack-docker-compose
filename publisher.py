@@ -2,6 +2,10 @@ import time
 import json
 from kafka import KafkaProducer
 from kafka.errors import KafkaTimeoutError
+import os
+
+# Use the environment variable for the Docker Host IP or a default value
+docker_host_ip = os.getenv('DOCKER_HOST_IP', 'localhost')
 
 def create_producer():
     producer = None
@@ -9,7 +13,7 @@ def create_producer():
         try:
             print("Creating Kafka Producer...")
             producer = KafkaProducer(
-                bootstrap_servers='kafka1:19092',  # Define the Kafka broker
+                bootstrap_servers=f'{docker_host_ip}:9092',  # Kafka broker configuration
                 value_serializer=lambda v: json.dumps(v).encode('utf-8')
             )
             print("Kafka Producer created successfully.")
@@ -28,3 +32,4 @@ if __name__ == "__main__":
     while True:
         publish_message(producer)
         time.sleep(60)  # Send a message every minute
+        
